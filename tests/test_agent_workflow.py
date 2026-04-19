@@ -9,6 +9,13 @@ class EmptyJsonAnalyzerClient:
         return "# no-op rewrite\n"
 
 
+class UnknownSeverityAnalyzerClient:
+    def complete(self, system_prompt: str, user_prompt: str) -> str:
+        if "Return ONLY valid JSON" in system_prompt:
+            return '[{"type":"Reliability","severity":"Critical","msg":"Unknown severity from model"}]'
+        return "def f():\n    return 1\n"
+
+
 def test_workflow_runs_in_offline_mode_and_returns_shape():
     agent = BugHoundAgent(client=None)  # heuristic-only
     code = "def f():\n    print('hi')\n    return True\n"
@@ -68,3 +75,13 @@ def test_empty_llm_issue_list_falls_back_to_heuristics_when_code_has_obvious_iss
                "Reliability" for issue in result["issues"])
     assert any("LLM returned no issues" in entry.get("message", "")
                for entry in result["logs"])
+
+
+def test_unknown_severity_from_llm_does_not_autofix():
+    agent = BugHoundAgent(client=UnknownSeverityAnalyzerClient())
+    code = "def f():\n    return 1\n"
+    result = agent.run(code)
+
+    assert result["risk"]["should_autofix"] is False
+    assert any(
+        "Unrecognized severity label" in r for r in result["risk"]["reasons"])

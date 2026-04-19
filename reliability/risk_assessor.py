@@ -45,6 +45,10 @@ def assess_risk(
         elif severity == "low":
             score -= 5
             reasons.append("Low severity issue detected.")
+        else:
+            score -= 20
+            reasons.append(
+                "Unrecognized severity label detected; treating as cautious risk.")
 
     # ----------------------------
     # Structural change checks
