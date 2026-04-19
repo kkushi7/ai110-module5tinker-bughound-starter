@@ -107,3 +107,7 @@ You should see tests covering:
 * Risk scoring and guardrails
 * Heuristic fallbacks when LLM output is invalid
 * End-to-end agent workflow shape
+
+Summary:
+The core idea students needed to understand was that BugHound is not just an LLM wrapper, but a guarded workflow where analysis, fixing, and risk policy are separate decision layers.
+Students are most likely to struggle with deciding when to trust model output versus when to fall back to heuristics, especially when output is valid JSON but low quality. AI was most helpful for creating candidate fixes and possible edge cases to test. AI was most misleading when it sounded confident while omitting issues, inventing severity labels, or returning outputs that were not reliable enough for auto-apply decisions. Without giving answers, I would guide a student by asking them to trace one failing input through each step and predict the risk score and auto-fix decision before running tests.
